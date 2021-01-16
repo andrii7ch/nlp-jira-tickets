@@ -75,6 +75,8 @@ const loadCorpora = async (name) => {
         });
     });
 
+    corpora.bagOfWords = new Map([...corpora.bagOfWords.entries()].sort());
+
     return corpora;
 };
 
@@ -120,10 +122,14 @@ router.get('/corporaData', async (req, res) => {
 
     const topics = determineTopics(corpora, topicsLimit, termsLimit);
 
+    let wordsAmount = 0;
+    corpora.docs.forEach(docProps => wordsAmount += docProps.wordsAmount);
+
     const returnData = formatDataForView(corpora, topics);
     returnData.topicsLimit = topicsLimit;
     returnData.termsMaxAmount = termsMaxAmount;
 
+    fs.writeFile('./asdsadsa.json', JSON.stringify(returnData),() => console.log('asdsadas'));
     res.json(returnData);
 });
 
