@@ -19,7 +19,7 @@ const wordsToBigrams = wordsArray => {
 };
 
 const normalizeTerms = termsArray => {
-    const process = spawn('python', ['./modules/pymorphy.py']);
+    const process = spawn('python3', ['./modules/pymorphy.py']);
     process.stdin.setEncoding('utf-8');
     process.stdin.write(JSON.stringify(termsArray));
     process.stdin.end();
@@ -231,7 +231,7 @@ router.get('/corporaData', async (req, res) => {
 
 const getTickets = () => {
     const parsedFile = JSON.parse(fs.readFileSync('tickets_copy.json', 'utf-8'));
-    const process = spawn('python', ['./modules/sentiment_analyzer.py']);
+    const process = spawn('python3', ['./modules/sentiment_analyzer.py']);
     process.stdin.setEncoding('utf-8');
     process.stdin.write(JSON.stringify(parsedFile));
     process.stdin.end();
