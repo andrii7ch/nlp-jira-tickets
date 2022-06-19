@@ -15,53 +15,64 @@
         <div class="panels">
             <div class="settings panel">
                 <h2>
-                    <label>Корпус:
+                    <label>Sprint:
                         <select id="corporaSelector"></select>
                     </label>
                 </h2>
                 <h2>
-                    <label>Обмеження кількості тем:
+                    <label>Topics limit
                         <input type="range" min="1" id="topicsLimit">
                     </label>
                 </h2>
                 <h2>
-                    <label>Обмеження кількості термів:
+                    <label>Terms limit
                         <input type="range" min="1" id="termsLimit">
                     </label>
                 </h2>
             </div>
             <div class="topics panel">
-                <h2>Теми:</h2>
+                <h2>Topics:</h2>
                 <div class="topics-list"></div>
             </div>
             <div class="term-details panel hidden">
                 <h2 class="term-detail__value"></h2>
-                <div class="term-detail__row term-detail__pos">
-                    <span class="term-detail__key">Частина мови: </span>
-                    <span class="term-detail__pos-value"></span>
-                </div>
                 <div class="term-detail__row term-detail__ner hidden">
-                    <span class="term-detail__key">Сутність: </span>
+                    <span class="term-detail__key">Entity: </span>
                     <span class="term-detail__ner-value"></span>
                 </div>
                 <div class="term-detail__row term-detail__docs-amount">
-                    <span class="term-detail__key">К-сть документів: </span>
+                    <span class="term-detail__key">Tickets amount: </span>
                     <span class="term-detail__docs-amount-value"></span>
                 </div>
                 <div class="term-detail__row term-detail__topic">
-                    <span class="term-detail__key">Тема: </span>
+                    <span class="term-detail__key">Topic: </span>
                     <span class="term-detail__topic-value"></span>
                 </div>
             </div>
+            <div class="panel">
+                <input type="checkbox" id="termsClassificationCheckbox">
+                <span style="font-weight: bold">With terms classification</span>
+            </div>
         </div>
         <div class="docs">
-            <h1>Документи</h1>
+            <h1>Tickets</h1>
             <div class="docs-list"></div>
         </div>
         <div class="graph"></div>
     </div>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p style="text-align: center; font-weight: bold">Comment sentiment analysis</p>
+            <canvas id="myChart" class="myChartCanvas"></canvas>
+            <p style="text-align: center; font-weight: bold">Comments</p>
+            <ul id="commentsList"></ul>
+        </div>
+
+    </div>
 
     <script src="//unpkg.com/force-graph"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="./js/index.js"></script>
 </body>
 </html>

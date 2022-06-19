@@ -1,0 +1,416 @@
+[
+  {
+    "name": "Ability to add extensions to Neethi.txt",
+    "description": "Current Neethi implementation seems lagging support to integrate other extensions. Here is a proposal with a patch to implement it. There are extensions which can process domain specific policies.When policy processor sees an unknown namespace, the extensions registered which can process that particular element. is handed over that element. The task of that extension is to process the given OMElement and return back an Assertions. In this way, other extensions like security, RM can be intergrated bettter with policy. ",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Patch addressing the improper log message."
+      },
+      {
+        "name": "No testcase added as change is done only in log message. "
+      }
+    ]
+  },
+  {
+    "name": "Accessibility Widget.txt",
+    "description": "A port of the Moodle Accessibility block to run as a W3C widget.  Provides colour changing and font size controls.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Multiple other jiras have superceded this."
+      }
+    ]
+  },
+  {
+    "name": "Add a demo site.txt",
+    "description": "It would be good to have a demo site, for testing and example purposes",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "the AuthenticationFilter logic now attempts to authenticate the request without doing a HTTP 401 if there is info avail in the request to perform the authentication."
+      },
+      {
+        "name": "test failure is unrelated"
+      },
+      {
+        "name": "+1  looks good\r\n\r\nStyle nit: the catch and else clause go on the same line as the bracket"
+      },
+      {
+        "name": "committed to trunk and branch-2"
+      },
+      {
+        "name": "we need backport for hadoop 1"
+      },
+      {
+        "name": "patch for branch-1"
+      },
+      {
+        "name": "committed to branch-1"
+      },
+      {
+        "name": "Just a question, did you test if MR jobs gracefully handle the re-auth response?  I'm presuming the job won't have the credentials for a re-auth, so hopefully it makes the job \"gracefully\" fail? "
+      }
+    ]
+  },
+  {
+    "name": "Add standard embedding feature for widgets.txt",
+    "description": "It can be useful to be able to embed a widget (or widget instance) in other sites and pages as well as the original container site. This has been done in a fairly hacky way in the Moodle plug-in, for example.Candidate specifications including oEmbed ( and the W3C Widget Embedding work (",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Attached patch scopes the znodes by the configured nameservice ID. So, if the configured parent znode is /hadoop-ha, then it will work inside /hadoop-ha/<nameservice>/ without having to manually configure the parent znode per-quorum."
+      },
+      {
+        "name": "+1, the patch looks good to me. Good on you, Todd."
+      },
+      {
+        "name": "Thanks for the quick review. I ran all the ZKFC tests and committed this to the branch."
+      }
+    ]
+  },
+  {
+    "name": "Allow hot deploy from directory.txt",
+    "description": "It would make widget development faster if rather than having to re-deploy the widget (with ant) every time you changed a file wookie would just monitor the whole uncompressed folder for changes.This is similar to how Tomcat works when you edit a expanded WAR.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Patch against trunk. No tests included, because it's a doc update."
+      },
+      {
+        "name": "I'm going to go out on a limb and say the test failure is not as a result of this patch :)"
+      },
+      {
+        "name": "Patch looks pretty good to me, Henry. One little comment:\r\n\r\n# \"After the call, buf.position() and buf.limit() should be unchanged...\" - perhaps change this to \"after a successful call\" ?"
+      },
+      {
+        "name": "Seems reasonable - patch includes Aaron's suggested rewording. "
+      },
+      {
+        "name": "+1, the patch looks good to me. I'm going to commit this momentarily."
+      },
+      {
+        "name": "I've just committed this to trunk. Thanks a lot for the contribution, Hank."
+      },
+      {
+        "name": "Committed to branch-2 as well."
+      }
+    ]
+  },
+  {
+    "name": "Allow wookie to broadcast update status once a new widget is imported.txt",
+    "description": "I have a requirement where I want to notify another application that a new widget has been added to wookie.  The idea initially is to define a flag and a url in the widgetserver.properties file which allows wookie to fire off a kind of notification to that url.  The actual use case I have is to fire this event to apache rave, which then in turn could auto-import the new wookie widget and make it available.  A second iteration could define multiple endpoints perhaps.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Patch attached. Now accepts ip or ip:port, does not accept null, ip:, etc. Added a test for this method."
+      },
+      {
+        "name": "+1, the patch looks good to me."
+      },
+      {
+        "name": "Thanks ATM, I've committed this and merged to branch-2."
+      }
+    ]
+  },
+  {
+    "name": "Better management of CSS in templating system.txt",
+    "description": "At present the only way of providing new CSS files is to provide a new index.html file that will load them as appropriate.It would be useful if we had a configuration parameter to do this for us. It would also be useful if any CSS files provided with a template or widget were automatically included in the default index.html",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "This doesn't apply to branch-1 or branch-2."
+      }
+    ]
+  },
+  {
+    "name": "C# Inital framework.txt",
+    "description": "This a inital C# framework.My C# skill is not very high, but C# is very familiar with Java and I have some Java knowledge.Functions:getAvailableWidgets <-- return List of Widget instancesgetOrCreateInstance <-- return new InstanceSee TestWookieService.cs.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Duplicate of HDFS-8218."
+      }
+    ]
+  },
+  {
+    "name": "Consider content-type additional params in the resouce matching process.txt",
+    "description": "Following our discussion in the mailing-list ( should be able to consider the content-type params in the resource matching process.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "I think we should just use the values from templates/conf/log4j.properties in main/conf/log4j.properties, the former look the most up2date, and they're mostly the same (ie just different order in some places, and removing things that are commented out). "
+      },
+      {
+        "name": "I checked over the template and it seemed a superset of main, so I've gone ahead and done as Eli suggested. I was able to start a cluster w/o issues and run a basic jobs. The generated logs looked fine to me."
+      },
+      {
+        "name": "+1  looks good"
+      },
+      {
+        "name": "Forgot to mention, the test failure is unrelated. I've committed and merged to branch-23. Thanks Pat!"
+      }
+    ]
+  },
+  {
+    "name": "Create non-UI administration client and capabilities.txt",
+    "description": "We decided to phase out the UI (JSP-based) admin client in favour of accessing administrative features of Wookie principally via the REST API. This can also be extended to cover administration via Widgets, Command-line clients, or by configuration settings that can be dynamically reloaded (e.g in the manner of widget deployment using watched folders).We should therefore implement the new admin client modes and remove the admin JSP scripts. ",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "+1"
+      },
+      {
+        "name": "thanks Roman. committed to trunk and branch-2"
+      }
+    ]
+  },
+  {
+    "name": "Have Walkthrough actions added by default when a question is displayed.txt",
+    "description": "It will be useful to have actions automatically added when a question is displayed.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Hi Hari, I believe this is a duplicate of HDFS-3143. Do you agree?"
+      },
+      {
+        "name": "Sure looks like a dup."
+      },
+      {
+        "name": "Resolving as a duplicate of HDFS-3143."
+      }
+    ]
+  },
+  {
+    "name": "Implement inter-widget messaging.txt",
+    "description": "One of the more persistent new feature requests we've had for Wookie has been to extend the mechanisms for inter-widget communication (IWC). As it currently stands, Wookie supports two mechanisms for IWC:1. Wave Shared StatesWookie enables \"sibling\" widgets to share their state. This is exposed to widgets using the Google Wave Gadget API, which enables widgets to submit state update deltas, and to register a callback to notify them when their state has been updated by another widget instance. We define siblings using the algorithm in org.apache.wookie.util.SiblingPageNormalizer; essentially this is that the widget instance must be for the same widget, with the same shared data key, and the same API key.2. HTML5 Drag and DropWhile not actually part of Wookie itself, Widgets can be developed using HTML5 drag and drop capability, enabling user-directed IWC.Some use-cases for IWC have been collected on the Talk About Widgets mailing list.The most common use-cases for extending IWC proposed for Wookie I've seen involve \"Dashboard\"-style messaging. In this model, widgets appearing in the same space for the user get to share events. For example, all the widgets in a single user's dashboard can send data to each other. This might follow a single shared state model, but is more likely to follow a \"channel\" metaphor, with named \"channels\" or \"queues\" between widgets. There are several ways this could be implemented, for example:A. User-specified channelsIn this model, the user specifies exactly which messages are sent between widgets. For example, the EzWeb project defines a \"wiring\" interface with \"slots\" and \"events\" connected with user-created \"channels\". For example, the user create a channel from a widget with a \"weather\" event to a widget with a \"weather\" slot. B. Widget-specified channelsIn this model, widgets are automatically able to receive any events on any channel that they choose to listen to. Users do not need to create channels to enable IWC.These two mechanisms are not necessarily exclusive, and could be supported within the same Feature extension. For example, the JavaScript API may look like this:iwc.sendEvent(String event_name, Object event_value)iwc.registerCallback(String slot_name, Function callback)I would prefer having this IWC extension use its own functions in its own object rather than overload the Wave and Widget objects, to avoid any possible confusion.In case \"A\", callbacks are only triggered where there are explicit channels linking the sending event and the receiving slot; in case \"B\", events are propagated to all registered callbacks that the event_name matches.For example, in pseudocode, the implementation could look something like:sendEvent(event_name, value, idkey){\t\tinstance = find widget instance (idkey)\t\tif use_channels:\t\t\tevent = find event(instance.getWidget, event_name)\t\t\tfind channels (eventinstance = instance & event = event_name)\t\t\tfor channel in channels:\t\t\t\tslot = channel.slot\t\t\t\tsend notification to slot (target, slot, value)\t\t\t\tNotifier.notifySingleInstance(target,\"iwc.__callback({slot},{value})\")\t\telse:\t\t\t\tNotifier.notifySiblingsByUser(instance,\"iwc.__callback({event_name},{value})\")}Note that in case \"A\", the widget author just registers callbacks for its slots without having to be concerned with what the sending widget calls them, so if a user can wire a \"weather\" event to a \"temperature\" slot, the sending widget calls:sendEvent(\"weather\",\"30C\");and the receiver can call:registerCallback(\"temperature\",my_function); ... and the channel wires things up despite the names not matching. In case B, the receiving widget would have to know the name of the event, and register a callback.In case A, widgets need to declare their \"events\" and \"slots\" as extensions in config.xml so they can be wired up in channels by a user, and there needs to be some sort of UI where users get to do some wiring. Wookie could expose an API for creating/removing/editing channels that could be implemented by containers rather than provide this UI itself.(Interestingly, case A would in theory support situations where widgets send notifications to widgets in different containers; though I think this would only really work if we went did the OpenID implementation so could have some assurance that the source and target widget instances belonged to the same user).[1]  ",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Patch attached."
+      },
+      {
+        "name": "Arg, I guess changes hadoop-project/pom.xml don't pass test-patch. I'll run tests locally."
+      },
+      {
+        "name": "+1, assuming you've done a full build locally and run ftpfs-related tests. (are there any such? I can't seem to find any, since HDFS-441 removed it from HDFS but HADOOP-6119 never re-committed it in Common)"
+      },
+      {
+        "name": "I took a stab at restoring HADOOP-6119, I got far enough to load the relevant FTP libraries and start the server but rat holed on setting up user/permissions. Was able to verify that commons-net 3 FtpClient was able to connect to and list the server."
+      },
+      {
+        "name": "Thanks Todd, I've committed this."
+      }
+    ]
+  },
+  {
+    "name": "Implement the W3C XML Digital Signatures for Widgets specification in Wookie.txt",
+    "description": "W3C XML Digital Signatures for Widgets specifies how both authors and distributors of widgets can digitally sign a Widget package: The spec is here:  means that an organisation can choose to automatically install and update widgets that carry recognised signatures - for example from a reputable online widget store (distributor) or from an approved widget author rather than require admin intervention to approve them. For Wookie this means implementing the mechanism for locating and verifying W3C signature.xml files in Widgets, and providing signature management options. For example, we may want to have a configuration property set for requiring signatures be checked, and a file where trusted signatories are listed for checking against when a new widget is uploaded, or a new version is detected online using Widget Updates. We may also want to look at how Wookie can delegate upwards decisions based on signature verification, for example to let an Apache Rave admin choose to allow automatic publishing of signed widgets from trusted sources provided that Wookie has verified the signature and returned this information to Rave. This could be handled in the response to uploading a widget to Wookie using the REST API, e.g. adding <signature verified=\"true\" type=\"author\"/> to the metadata returned in the response body.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Patch attached."
+      },
+      {
+        "name": "Updated patch rebased on trunk."
+      },
+      {
+        "name": "Looks good. I just reverted HADOOP-8193 since it caused some other test failures, but when it is recommitted we can commit this. +1 in advance"
+      },
+      {
+        "name": "Thanks Todd. I've committed this and merged."
+      }
+    ]
+  },
+  {
+    "name": "Implement W3C Widget Updates spec to enable automatic updating of widgets.txt",
+    "description": "The W3C Widget Updates spec provides a way for widgets to identify their update locations; this would enable, for example, the Wookie admin to either enable widgets to auto-update, or to show the admin that updates are available.Spec information at:  this is still a working draft; hence I've tentatively put this against v0.8.3.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "I think this is dup of HADOOP-8204"
+      }
+    ]
+  },
+  {
+    "name": "Name field on Policy Object.txt",
+    "description": "Section 4.2 of the ws-Policy Framework specification talks about Policy identification.  see :  for the latest version updfated March this year.There is an attribute defined called Name of type xs:anyURI.This is in addition to the wsu:Id attribute. I suggest we add getters and setters for this field to the Policy object. I have a patch if this is agreed. ",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "this patch creates the src/native/configure script and update patches the build.xml to create the configure script inside src/native if its not there."
+      },
+      {
+        "name": "Giri, isn't this the issue that causes MR to fail in 1.0.2-rc1 if Snappy compression is configured on?  If so, it needs to be marked as a bug, not an improvement.  Thanks."
+      },
+      {
+        "name": "+1\r\n\r\nWe should systematically remove all of the autoconf/automake files and regenerate them in the build directory, but this is a step in the right direction."
+      },
+      {
+        "name": "Committing to branch-1.0.2, branch-1.0, and branch-1.\r\nThanks, Giri!"
+      },
+      {
+        "name": "Confirmed after applying this fix, the only difference in the resulting src/native/configure file was one added block of script related to Snappy."
+      }
+    ]
+  },
+  {
+    "name": "New sample widget - Walkthrough.txt",
+    "description": "As recently discussed on the mailing list [1] I have built a new widget for to be considered for inclusion as an demo. I've tidied it up ready for distribution and think it is now ready for testing etc. The name Walkthrough is a quick fix and better suggestions are sought.The widget was developed by myself as OpenDirective for the University of Oxford. It was commission by the UK IPO  The example Data set was created by Rowan Wilson of OSS Watch.I've attached it as a zip and look forward to comments.1:",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Patch attached."
+      },
+      {
+        "name": "+1"
+      },
+      {
+        "name": "No tests because it just removes an unused env var.\r\nThanks Tom. I've committed this and merged to branch-23."
+      }
+    ]
+  },
+  {
+    "name": "Packaging of Wookie to run portably from a usb stick.txt",
+    "description": "Packaging Apache Ant, Wookie, Java JDK and RapisSVN as a distribution option to enable users to test and build widgets on a portable version (executed from a usb stick) of the Apache Wookie server. More information and example package at  ",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "verified visually that log WARNs are written once"
+      },
+      {
+        "name": "+1, patch looks good.\r\n\r\nOne optional nitpick though: Would {{warnOnceIfDeprecated}} be a better method name?"
+      },
+      {
+        "name": "same patch renaming method per Harsh's suggestion"
+      },
+      {
+        "name": "Committed to trunk and branch-0.23"
+      },
+      {
+        "name": "Pulled this into branch-0.23"
+      }
+    ]
+  },
+  {
+    "name": "PHP Connector framework.txt",
+    "description": "Hi.Update 02/03/2010:addParticipants and getUsers for Widget instances working.XML handling rewritten, now using php simplexml.Lot's of error handling/exceptions throwing done. Earlier:I've done some work on PHP framework. It's basically almost completereplica of Java version, with few exceptions. You'll findTestWookieService.php from the package, which is a small example.At the moment framework is not able to add participants nor get usersfor widget instances.Add participant request returns \"bad request 400\" and get users \"404not found\". If i remove parameters from querystring thenwookie/participants asks for authorization.There's lot of error handling and some data handling still todo, butthe main part of framework works.Give it a try.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Can you check whether it is a dupe of HADOOP-7868?"
+      },
+      {
+        "name": "Thanks Kihwal, you are right. Also, the solution is better at HADOOP-7868. Marking this as dup."
+      }
+    ]
+  },
+  {
+    "name": "Provide ability to save Walkthrough action lists as well print them.txt",
+    "description": "Currently the Save Actions page allows printing, select and copy of the text or the user can invoke the browser Save As. It would be better to provide a save feature button.Notes: this was explored in some detail and the problem is the lack of lack of local file access from a web app. Walkthrough is completely client side but given simple server support it is possible initiate a text file download which can then be saved as any download (this is a round about way to achieve the desired result)",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Does this mean the sym link support will be backported as well?"
+      },
+      {
+        "name": "This would get the client side but not the server side, which would need to be backported as well. I'm not planning to do this jira at the moment btw which is why I left it unassigned."
+      },
+      {
+        "name": "Moved to 1.2.0 upon release of 1.1.0."
+      },
+      {
+        "name": "Changed Target Version to 1.3.0 upon release of 1.2.0. Please change to 1.2.1 if you intend to submit a fix for branch-1.2."
+      }
+    ]
+  },
+  {
+    "name": "Python inital framework.txt",
+    "description": "I've never ever written anything  in Python.Just looked up some examples and gave it a try.Methods:getAvailableWidgets()getOrCreateInstance()See TestWookieService.pyI ran it from command line \"python TestWookieService.py\" ",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Uploading a patch. I will file a separate JIRA for tests since the tests are part of hdfs."
+      },
+      {
+        "name": "Hey John, could you please set affects/target versions for this? Thanks a lot."
+      },
+      {
+        "name": "Uploading a new patch with a small new test and a fix."
+      },
+      {
+        "name": "Going to dupe this to HADOOP-8014. Will post an updated patch there."
+      },
+      {
+        "name": "Duping this to HADOOP-8014."
+      }
+    ]
+  },
+  {
+    "name": "Support API key migration.txt",
+    "description": "We should support the case of enabling an administrator to migrate an API key - for example, to exchange a compromised key for a reissued key without causing any problems for existing Widget Instances and any data associated with them. This should be exposed using the PUT method of the API Key REST API.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Patch looks good to me. One tiny nit:\r\n\r\n# Please rename the exception variable to \"ioe\", as is standard in the Hadoop code.\r\n\r\n+1 once this is addressed and Jenkins comes back clean."
+      },
+      {
+        "name": "Attaching patch that renames exception variable to ioe"
+      },
+      {
+        "name": "I've just committed this to trunk and branch-0.23. Thanks a lot, Natty."
+      }
+    ]
+  },
+  {
+    "name": "Support signed API requests.txt",
+    "description": "The current REST API uses a very simple shared secret model for verifying messages from plugins/connectors, which is good for most cases but I think going forwards we need to support a more secure method.My proposal for this is to use message signing based on oAuth, so that as well as an API Key, we also store an API Secret. The connector framework creates messages as normal, but will sign any messages sent to Wookie using the API Secret and a randomly generated Nonce. (i.e. messages will contain the API Key and Nonce, but not the API Secret)Wookie can then authenticate the message by looking up the API Secret associated with the provided API Key, adding the Nonce, and verifying the message signature. This could be implemented using the standard net.oAuth package utilities rather than requiring a lot of new code; the main extensions would be:- enhancements to the Connector Framework- addition of a API_Secret property for the API Key class, and a Nonce cache (to prevent replay attacks)- extension of WidgetKeyManager to generate and send the API Secret on registration of an API Key- extension of WidgetKeyManager.isValidRequest() to check message signatures as well as validity of API KeyI would envisage this not being needed for the admin APIs, which is secured according to the servlet container configuration.Its important that the details at the plugin end are handled by the connector framework rather than make plugin developers jump through more hoops - the only extra step should be having to paste in the API Secret when configuring a new plugin that uses the connection framework.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "Does this change not also need to be made on trunk?"
+      },
+      {
+        "name": "@Aaron, I don't think so. The trunk version deals with jsvc quite differently (HDFS-2303).  "
+      },
+      {
+        "name": "+1 patch looks good"
+      },
+      {
+        "name": "Committed the patch."
+      },
+      {
+        "name": "Closed upon release of Hadoop-1.0.3."
+      }
+    ]
+  },
+  {
+    "name": "unit test for xml schema test suite.txt",
+    "description": "Attached is a unit test which tests that we write out the same document that we read in. Although, XmlSchema rearranges the documen slightly, so we are a bit lax on some things - like the number of attributes on the root schema element. This patch also fixes- stackoverflow exception when XmlSchema trys to write a cyclic graph of complex types (see added test in TestElementRefs)- writing of xml schema attributes. Before they were prefixed - i.e. <xsd:element xsd:name=\"foo\"/>, but they should be <xsd:element name=\"foo\"/>. I'm not sure how this ever worked before. But maybe it is a funky DOM thing? It'd be good if someone could verify my fix is correct.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "+1"
+      },
+      {
+        "name": "Thanks Todd, committed the trivial change to branch-0.23 and trunk.\r\n\r\nOne less warn everytime :-)"
+      },
+      {
+        "name": "I merged this into branch-0.23."
+      },
+      {
+        "name": "Thanks Jason. Nicer OOB experience :-)"
+      }
+    ]
+  },
+  {
+    "name": "Widget management.txt",
+    "description": "This is a parent issue to bring together various issues relating to widget management on a Wookie server.",
+    "sprint": "Sprint58",
+    "comments": [
+      {
+        "name": "It seems that for temporary fix you may do:\r\nsudo chmod g+w /var/log/hadoop/root/\r\nsudo chmod g+w /var/log/hadoop/root/SecurityAuth.audit "
+      }
+    ]
+  }
+]

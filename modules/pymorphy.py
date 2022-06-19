@@ -2,10 +2,14 @@
 import sys
 import json
 import pymorphy2
+from nltk.stem import WordNetLemmatizer
+
 
 morph = pymorphy2.MorphAnalyzer(lang='uk')
+word_net_lem = WordNetLemmatizer()
 
-docsArr = json.loads(sys.argv[1])
+
+docsArr = json.loads(sys.stdin.read())
 
 normalizedDocsTerms = []
 for wordsArr in docsArr:
@@ -13,15 +17,15 @@ for wordsArr in docsArr:
     currentDocNormalizedTerms = normalizedDocsTerms[len(normalizedDocsTerms) - 1]
 
     for word in wordsArr:
-        parsedWord = morph.parse(word)[0]
-        if any(termObj['normalForm'] == parsedWord.normal_form for termObj in currentDocNormalizedTerms):
+        parsedWordNormalForm = ' '.join(map(lambda w: word_net_lem.lemmatize(w), word.split(' ')))
+        if any(termObj['normalForm'] == parsedWordNormalForm for termObj in currentDocNormalizedTerms):
             for termObj in currentDocNormalizedTerms:
-                if termObj['normalForm'] == parsedWord.normal_form:
+                if termObj['normalForm'] == parsedWordNormalForm:
                     termObj['frequency'] += 1
         else:
             termObj = {
-                "normalForm": parsedWord.normal_form,
-                "pos": parsedWord.tag.POS,
+                "normalForm": parsedWordNormalForm,
+                "pos": None,
                 "frequency": 1
             }
             currentDocNormalizedTerms.append(termObj)

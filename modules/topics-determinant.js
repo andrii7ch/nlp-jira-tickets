@@ -8,7 +8,7 @@ module.exports = (corpora, topicsLimit, termsLimit) => {
     const corporaTFIDF = loadFromCache ? JSON.parse(fs.readFileSync(cacheSrc, 'utf8')) : tfidf(corpora);
 
     if (!loadFromCache)
-        fs.writeFile(cacheSrc, JSON.stringify(corporaTFIDF), () => console.log('tfidf.json was created'));
+        fs.writeFileSync(cacheSrc, JSON.stringify(corporaTFIDF));
 
     if (topicsLimit > corpora.docs.length) topicsLimit = corpora.docs.length;
     const topicsMatrix = getTopicsMatrix(corporaTFIDF, topicsLimit);

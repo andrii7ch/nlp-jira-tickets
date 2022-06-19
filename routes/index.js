@@ -6,12 +6,23 @@ const spawn = require('child_process').spawn;
 const removeStopWords = require('../modules/stopWordsRemover/stopWordsRemover');
 const removePunctuation = require('../modules/punctuationRemover');
 const determineTopics = require('../modules/topics-determinant');
-const nerData = JSON.parse(fs.readFileSync('./modules/ner.json', 'utf8'));
+const getNerCategory = require('../modules/nerModel/nerModel');
 
 const docToArray = doc => removeStopWords(removePunctuation(doc).toLowerCase().split(' '));
 
+const wordsToBigrams = wordsArray => {
+    const result = [];
+    for (let i = 1; i < wordsArray.length; i++) {
+        result.push(wordsArray[i - 1] + ' ' + wordsArray[i]);
+    }
+    return result;
+};
+
 const normalizeTerms = termsArray => {
-    const process = spawn('python', ['./modules/pymorphy.py', JSON.stringify(termsArray)]);
+    const process = spawn('python', ['./modules/pymorphy.py']);
+    process.stdin.setEncoding('utf-8');
+    process.stdin.write(JSON.stringify(termsArray));
+    process.stdin.end();
 
     return new Promise((resolve, reject) => {
         process.stdout.on('data', data => resolve(data.toString()));
@@ -34,19 +45,23 @@ const loadCorpora = async (name) => {
     const loadFromCache = fs.existsSync(src + '/terms.json');
     const cacheData = [];
 
-    const files = fs.readdirSync(src);
-    for (const fileId in files) {
-        const file = files[fileId];
-
-        if (path.extname(file) !== '.txt') continue;
-
-        const docName = file.substring(0, file.length - 4);
-        const docContent = fs.readFileSync(src + '/' + file, 'utf8');
-        const wordsArray = docToArray(docContent);
+    const tickets = await getTickets()
+    for (const ticket of tickets) {
+        const docName = ticket.name;
+        const docContent = ticket.description;
+        const tokenizedDocName = docToArray(docName);
+        const wordsArray = [
+            ...tokenizedDocName,
+            ...wordsToBigrams(tokenizedDocName),
+            // ...docToArray(docContent),
+            ...wordsToBigrams(docToArray(docContent)),
+        ];
 
         const docProps = {
             content: docContent,
             wordsAmount: wordsArray.length,
+            comments: ticket.comments,
+            sentiment: ticket.sentiment,
         };
 
         if (!loadFromCache) cacheData.push(wordsArray);
@@ -55,10 +70,86 @@ const loadCorpora = async (name) => {
     }
 
     const jsonNormalizedTerms = loadFromCache ? fs.readFileSync(src + '/terms.json', 'utf8') : await normalizeTerms(cacheData);
-    if (!loadFromCache)
-        fs.writeFile(src + '/terms.json', jsonNormalizedTerms,() => console.log('terms.json was created'));
-
     const normalizedTerms = JSON.parse(jsonNormalizedTerms);
+    if (!loadFromCache)
+        fs.writeFileSync(src + '/terms.json', JSON.stringify(normalizedTerms));
+
+
+    normalizedTerms.forEach((docTerms, docId) => {
+        const docName = [...corpora.docs.entries()][docId][0];
+
+        corpora.docs.get(docName).terms = new Map(docTerms.map(termProps => [termProps.normalForm, {...termProps}]));
+        docTerms.forEach(termProps => {
+            if (corpora.bagOfWords.has(termProps.normalForm))
+                corpora.bagOfWords.get(termProps.normalForm).docs.push(docName);
+            else
+                corpora.bagOfWords.set(termProps.normalForm, {
+                    pos: termProps.pos,
+                    docs: [docName]
+                });
+        });
+    });
+
+    corpora.bagOfWords = new Map([...corpora.bagOfWords.entries()].sort());
+
+    return corpora;
+};
+
+const loadNerCorpora = async (name) => {
+    const corpora = {
+        name,
+        docs: new Map(),
+        bagOfWords: new Map(),
+    };
+
+    const src = './corporas/' + name;
+    const tickets = await getTickets();
+
+    const loadFromCache = fs.existsSync(src + '/NerTerms.json');
+    const cacheData = [];
+
+
+    for (const ticket of tickets) {
+        const docName = ticket.name;
+        const docContent = ticket.description;
+        const tokenizedDocName = docToArray(docName);
+        const categories = [
+            ...tokenizedDocName,
+            ...docToArray(docContent),
+            ...wordsToBigrams(docToArray(docContent)),
+        ].map(word => {
+            let categoryInfo = getNerCategory(word);
+            if (categoryInfo == null) {
+                return null;
+            }
+            return [
+                categoryInfo.category,
+                categoryInfo.category,
+                categoryInfo.category,
+                categoryInfo.subcategory
+            ]
+        })
+            .flatMap(categories => categories)
+            .filter(category => category != null);
+
+
+        const docProps = {
+            content: docContent,
+            wordsAmount: categories.length,
+            comments: ticket.comments,
+            sentiment: ticket.sentiment
+        };
+
+        if (!loadFromCache) cacheData.push(categories);
+
+        corpora.docs.set(docName, docProps);
+    }
+
+    const jsonNormalizedTerms = loadFromCache ? fs.readFileSync(src + '/NerTerms.json', 'utf8') : await normalizeTerms(cacheData);
+    const normalizedTerms = JSON.parse(jsonNormalizedTerms);
+    if (!loadFromCache)
+        fs.writeFileSync(src + '/NerTerms.json', JSON.stringify(normalizedTerms));
+
 
     normalizedTerms.forEach((docTerms, docId) => {
         const docName = [...corpora.docs.entries()][docId][0];
@@ -92,8 +183,7 @@ const formatDataForView = (corpora, topics) => {
             const termProps = corpora.bagOfWords.get(term);
             termProps.topic = topicId;
             termProps.topicRelation = topics[topicId].get(term).relation;
-            if(termProps.pos === 'NOUN' && nerData[term])
-                termProps.ner = nerData[term];
+            termProps.ner = getNerCategory(term);
             data.terms.push([term, termProps]);
         });
     });
@@ -110,12 +200,18 @@ const formatDataForView = (corpora, topics) => {
     return data;
 }
 
-router.get('/',(req, res) => {
+router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + './../views/index.html'));
 });
 
 router.get('/corporaData', async (req, res) => {
-    const corpora = await loadCorpora(req.query.corpora);
+    const withTermsClassification = req.query.withTermsClassification;
+    let corpora;
+    if (withTermsClassification) {
+        corpora = await loadNerCorpora(req.query.corpora);
+    } else {
+        corpora = await loadCorpora(req.query.corpora);
+    }
     const topicsLimit = req.query.topicsLimit ? req.query.topicsLimit : Math.ceil(corpora.docs.size / 2);
     const termsMaxAmount = Math.min(corpora.bagOfWords.size, 50);
     const termsLimit = req.query.termsLimit ? Math.min(req.query.termsLimit, termsMaxAmount) : termsMaxAmount;
@@ -129,17 +225,28 @@ router.get('/corporaData', async (req, res) => {
     returnData.topicsLimit = topicsLimit;
     returnData.termsMaxAmount = termsMaxAmount;
 
-    fs.writeFile('./asdsadsa.json', JSON.stringify(returnData),() => console.log('asdsadas'));
+    fs.writeFileSync('./asdsadsa.json', JSON.stringify(returnData));
     res.json(returnData);
 });
 
-const getDirectories = source =>
-    fs.readdirSync(source, { withFileTypes: true })
-        .filter(dir => dir.isDirectory())
-        .map(dir => dir.name)
+const getTickets = () => {
+    const parsedFile = JSON.parse(fs.readFileSync('tickets_copy.json', 'utf-8'));
+    const process = spawn('python', ['./modules/sentiment_analyzer.py']);
+    process.stdin.setEncoding('utf-8');
+    process.stdin.write(JSON.stringify(parsedFile));
+    process.stdin.end();
 
-router.get('/getCorporasList', (req, res) => {
-    res.json(getDirectories('./corporas'));
+    return new Promise((resolve, reject) => {
+        process.stdout.on('data', data => resolve(JSON.parse(data.toString())));
+    });
+};
+
+const getCorporasList = async () =>
+    Array.from(new Set((await getTickets()).map(r => r.sprint)))
+
+
+router.get('/getCorporasList', async (req, res) => {
+    res.json(await getCorporasList());
 });
 
 router.get('/clearCache', (req, res) => {

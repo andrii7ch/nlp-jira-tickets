@@ -61,6 +61,11 @@ p {
     display: none;
 }
 
+.doc:not(.opened) > .comments-panel {
+    display: none;
+}
+
+
 .doc h2 {
     cursor: pointer;
 }
@@ -165,4 +170,52 @@ p {
 .loadingPanel .clearCache.active:hover {
     cursor: pointer;
     text-decoration: underline;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40vw;
+    height: 80vh;
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 300; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    padding-bottom: 100px;
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+.myChartCanvas {
+    width: 300px;
+    height: 300px;
+}
+
+ul {
+    list-style-type: circle;
 }

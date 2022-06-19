@@ -54,7 +54,6 @@ const ui = {
     termDetails: {
         container: document.querySelector('.term-details'),
         value: document.querySelector('.term-detail__value'),
-        pos: document.querySelector('.term-detail__pos-value'),
         ner: {
             row: document.querySelector('.term-detail__ner'),
             value: document.querySelector('.term-detail__ner-value')
@@ -65,8 +64,9 @@ const ui = {
     corporaSelector: document.getElementById('corporaSelector'),
     topicsLimitSlider: document.getElementById('topicsLimit'),
     termsLimitSlider: document.getElementById('termsLimit'),
-    loadingTime: document.querySelector('.loadingTime'),
-    clearCache: document.querySelector('.clearCache')
+    withTermsClassification: document.getElementById('termsClassificationCheckbox'),
+    clearCache: document.querySelector('.clearCache'),
+    modalDialog: document.getElementById('myModal'),
 };
 
 // Класи
@@ -76,6 +76,8 @@ class Doc {
         this.content = props.content;
         this.terms = props.terms;
         this.wordAmount = props.wordAmount;
+        this.comments = props.comments;
+        this.sentiment = props.sentiment;
     }
 
     linkTerms() {
@@ -98,11 +100,26 @@ class Doc {
         title.textContent = this.name;
         title.onclick = () => this.ui.classList.toggle('opened');
 
+        const riskLevel = document.createElement('span');
+        riskLevel.classList.add('risk-level-span');
+        riskLevel.classList.add('term');
+        riskLevel.style.fontWeight = 'bold';
+        riskLevel.onclick = () => {
+            showCommentSentimentAnalysisDialog(this);
+        };
+        this.determineRiskLevel(riskLevel);
+
         const content = document.createElement('p');
         content.textContent = this.content;
 
         const termsContainer = document.createElement('div');
         termsContainer.classList.add('terms');
+
+        const termsTitle = document.createElement('span');
+        termsTitle.textContent = 'Terms';
+        termsTitle.style.fontWeight = 'bold';
+        termsTitle.style.fontStyle = '14';
+        termsContainer.append(termsTitle);
 
         this.terms.forEach(termObj => {
             const termSpan = document.createElement('span');
@@ -118,11 +135,66 @@ class Doc {
             termsContainer.append(termSpan);
         });
 
+        this.ui.append(riskLevel);
         this.ui.append(title);
         this.ui.append(content);
+        this.renderComments();
         this.ui.append(termsContainer);
 
         ui.docsContainer.append(this.ui);
+    }
+
+    renderComments() {
+        if (this.comments.length === 0) {
+            return;
+        }
+
+        const commentPanel = document.createElement('div');
+        commentPanel.classList.add('comments-panel')
+        const commentsTitle = document.createElement('p');
+        commentsTitle.textContent = "Comments";
+        commentsTitle.style.fontWeight = 'bold';
+        commentsTitle.style.fontSize = '14';
+        commentPanel.append(commentsTitle);
+
+
+        const commentsListWrapper = document.createElement('ul');
+        commentPanel.append(commentsListWrapper);
+
+        this.comments.forEach(comment => {
+            const commentSpan = document.createElement('li');
+            commentSpan.classList.add('comment');
+            commentSpan.textContent = comment.name;
+
+            commentPanel.append(commentSpan);
+        });
+
+        this.ui.append(commentPanel)
+    }
+
+    determineRiskLevel(riskLevelElement) {
+        let totalWeightedSentiment = this.sentiment;
+        for (let i = 0; i < this.comments.length; i++) {
+            totalWeightedSentiment += (i+2) * this.comments[i].sentiment;
+        }
+        const totalElements = this.comments.length + 1;
+        const maxValue = totalElements * (totalElements + 1) / 2.0;
+
+        const normalizedSum = totalWeightedSentiment / maxValue;
+
+        riskLevelElement.style.backgroundColor = colors[8];
+        riskLevelElement.textContent = `${normalizedSum} risk level`;
+
+        if(normalizedSum < 0) {
+            riskLevelElement.style.backgroundColor = colors[0];
+            riskLevelElement.textContent = 'High risk level';
+        } else if(normalizedSum < 0.35) {
+            riskLevelElement.style.backgroundColor = colors[3];
+            riskLevelElement.textContent = 'Medium risk level';
+        } else {
+            riskLevelElement.style.backgroundColor = colors[8];
+            riskLevelElement.textContent = 'Low risk level';
+        }
     }
 }
 
@@ -150,8 +222,7 @@ class Term {
         ui.termDetails.ner.row.classList.remove('hidden');
 
         ui.termDetails.value.textContent = capitalize(this.value);
-        ui.termDetails.pos.textContent = this.pos ? ukrPOS[this.pos] : 'латиниця';
-        if(this.ner) ui.termDetails.ner.value.textContent = ukrNER[this.ner];
+        if(this.ner) ui.termDetails.ner.value.textContent = `${this.ner.category}, ${this.ner.subcategory}`;
         else ui.termDetails.ner.row.classList.add('hidden');
         ui.termDetails.docsAmount.textContent = this.docs.length;
         ui.termDetails.topic.style.backgroundColor = this.topic.color;
@@ -326,13 +397,14 @@ const clearTermDetails = () => {
     ui.termDetails.topic.className = 'term-detail__topic-value';
 };
 
-const loadData = async (corporaName) => {
+const loadData = async (corporaName, withTermsClassification) => {
     const topicsLimit = corpora.name === corporaName ? ui.topicsLimitSlider.value : null;
     const termsLimit = corpora.name === corporaName ? ui.termsLimitSlider.value : null;
 
     let src = `/corporaData?corpora=${corporaName}`;
     if (topicsLimit) src += `&topicsLimit=${topicsLimit}`;
     if (termsLimit) src += `&termsLimit=${termsLimit}`;
+    if (withTermsClassification) src += `&withTermsClassification=${withTermsClassification}`;
 
     const response = await fetch(src);
     const data = await response.json();
@@ -354,8 +426,7 @@ const renderPage = (loadingTime) => {
     clearContainer(ui.topicsContainer);
     corpora.topics.forEach(topic => topic.render());
 
-    ui.loadingTime.textContent = Math.round(loadingTime) / 1000 + ' сек';
-    ui.clearCache.textContent = 'Очистити кеш';
+    ui.clearCache.textContent = 'Clear cache';
     ui.clearCache.classList.add('active');
 
     const gData = {
@@ -377,9 +448,89 @@ const renderPage = (loadingTime) => {
     graph.graphData(gData);
 }
 
-const showCorpora = async (name) => {
+const showCommentSentimentAnalysisDialog = (doc) => {
+    const labels = [
+        'Ticket',
+        ...Array.from({length:doc.comments.length},(v,k)=>k+1)
+            .map(number => 'Comment #' + number)
+    ]
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: 'Comment sentiment analysis',
+            data: [doc.sentiment, ...doc.comments.map(c => c.sentiment)],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(201, 203, 207, 0.2)'
+            ],
+            borderColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+                'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)',
+                'rgb(201, 203, 207)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            scales: {
+                y: {
+                }
+            }
+        },
+    };
+
+    const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+    );
+
+    const span = document.getElementsByClassName("close")[0];
+
+    const commentsList = document.getElementById('commentsList');
+    doc.comments.forEach(comment => {
+        const c = document.createElement('li');
+        c.textContent = comment.name;
+        commentsList.append(c);
+    });
+
+    span.onclick = function() {
+        ui.modalDialog.style.display = "none";
+        myChart.destroy();
+        removeAllChildNodes(commentsList);
+    }
+    window.onclick = function(event) {
+        if (event.target === ui.modalDialog) {
+            ui.modalDialog.style.display = "none";
+            myChart.destroy();
+            removeAllChildNodes(commentsList);
+        }
+    }
+
+    ui.modalDialog.style.display = "block";
+};
+
+function removeAllChildNodes(element) {
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+}
+
+const showCorpora = async (name, withTermsClassification) => {
     const t0 = performance.now();
-    await loadData(name);
+    await loadData(name, withTermsClassification);
     const t1 = performance.now();
     renderPage(t1 - t0);
 };
@@ -404,9 +555,11 @@ const onPageInit = async () => {
 }
 
 // Налаштування event listeners
-ui.corporaSelector.onchange = () => showCorpora(ui.corporaSelector.value);
-ui.topicsLimitSlider.onchange = () => showCorpora(corpora.name);
-ui.termsLimitSlider.onchange = () => showCorpora(corpora.name);
+ui.corporaSelector.onchange = () => showCorpora(ui.corporaSelector.value, ui.withTermsClassification.checked);
+ui.topicsLimitSlider.onchange = () => showCorpora(corpora.name, ui.withTermsClassification.checked);
+ui.termsLimitSlider.onchange = () => showCorpora(corpora.name, ui.withTermsClassification.checked);
+ui.withTermsClassification.onchange = () => showCorpora(corpora.name, ui.withTermsClassification.checked);
+
 ui.clearCache.onclick = async () => {
     if (!ui.clearCache.classList.contains('active')) return;
 
